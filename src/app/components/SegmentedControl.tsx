@@ -1,14 +1,17 @@
 type SegmentedControlProps = {
   device: string
   setDevice: (device: string) => void
+  clearActiveCard: () => void
 }
 
 export default function SegmentedControl({
   device,
   setDevice,
+  clearActiveCard,
 }: SegmentedControlProps) {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDevice(event.target.value)
+    clearActiveCard()
   }
 
   const handleKeyPress = (

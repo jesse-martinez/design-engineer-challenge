@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import plugin from 'tailwindcss/plugin'
 
 const config: Config = {
   content: ['./src/app/**/*.{ts,tsx}'],
@@ -30,7 +31,19 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [
+    require('@tailwindcss/forms'),
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        '.select-none': {
+          '-webkit-user-select': 'none' /* Safari */,
+          '-moz-user-select': 'none' /* Firefox */,
+          '-ms-user-select': 'none' /* IE10+/Edge */,
+          'user-select': 'none' /* Standard */,
+        },
+      })
+    }),
+  ],
 }
 
 export default config

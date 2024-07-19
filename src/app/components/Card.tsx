@@ -10,16 +10,21 @@ type CardProps = {
   imagePath: string
   device: string
   childNumber: number
+  isActive: boolean
+  setActiveCard: () => void
+  clearActiveCard: () => void
 }
 
-export default function Card({ imagePath, device, childNumber }: CardProps) {
+export default function Card({
+  imagePath,
+  device,
+  childNumber,
+  isActive,
+  setActiveCard,
+  clearActiveCard,
+}: CardProps) {
   const [isMobileViewport, setIsMobileViewport] = useState(false)
-  const [isActive, setIsActive] = useState(false)
   const [inFocus, setInFocus] = useState(false)
-
-  const toggleActive = () => {
-    if (window.innerWidth <= 768) setIsActive(!isActive)
-  }
 
   useEffect(() => {
     const handleResize = debounce(() => {
@@ -55,7 +60,7 @@ export default function Card({ imagePath, device, childNumber }: CardProps) {
           'md:w-[504px]': !isMobileViewport && inFocus && !isPhone,
         },
       )}
-      onClick={toggleActive}
+      onClick={isActive ? clearActiveCard : setActiveCard}
       onMouseLeave={() => setInFocus(false)}
     >
       <div className="image-wrapper flex shrink-0 items-center justify-end transition-[padding] md:group-hover:pl-2">

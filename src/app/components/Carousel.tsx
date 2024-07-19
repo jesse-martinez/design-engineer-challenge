@@ -4,9 +4,14 @@ import { debounce } from '../debounce'
 type CarouselProps = {
   device: string
   children: ReactNode
+  clearActiveCard: () => void
 }
 
-export default function Carousel({ device, children }: CarouselProps) {
+export default function Carousel({
+  device,
+  children,
+  clearActiveCard,
+}: CarouselProps) {
   const [position, setPosition] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [startPosition, setStartPosition] = useState(0)
@@ -40,7 +45,8 @@ export default function Carousel({ device, children }: CarouselProps) {
 
   const handleDrag = (clientX: number, event: Event) => {
     if (!isDragging) return
-
+    
+    clearActiveCard()
     const dx = clientX - startPosition
     let newPosition = initialPosition + dx
     newPosition = Math.max(Math.min(newPosition, 0), minPosition)

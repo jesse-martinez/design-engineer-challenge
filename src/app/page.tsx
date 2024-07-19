@@ -7,6 +7,8 @@ import Card from './components/Card'
 
 export default function Home() {
   const [device, setDevice] = useState<string>('phone')
+  const [activeCard, setActiveCard] = useState<number | null>(null)
+
   const imagePaths: string[] = Array.from(
     { length: 11 },
     (_, index) => `wallpaper-${index + 1}.jpeg`,
@@ -26,15 +28,22 @@ export default function Home() {
           <p className="mt-4 text-body-small text-smokey md:mt-6 md:text-body-large">
             Grab the NFT you like for your phone wallpaper
           </p>
-          <SegmentedControl device={device} setDevice={setDevice} />
+          <SegmentedControl
+            device={device}
+            setDevice={setDevice}
+            clearActiveCard={() => setActiveCard(null)}
+          />
         </div>
-        <Carousel device={device}>
+        <Carousel device={device} clearActiveCard={() => setActiveCard(null)}>
           {imagePaths.map((imagePath, index) => (
             <Card
               key={index}
               imagePath={imagePath}
               device={device}
               childNumber={index}
+              isActive={activeCard === index}
+              setActiveCard={() => setActiveCard(index)}
+              clearActiveCard={() => setActiveCard(null)}
             />
           ))}
         </Carousel>
