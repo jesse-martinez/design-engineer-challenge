@@ -11,6 +11,15 @@ export default function SegmentedControl({
     setDevice(event.target.value)
   }
 
+  const handleKeyPress = (
+    event: React.KeyboardEvent<HTMLLabelElement>,
+    value: string,
+  ) => {
+    if (event.key === 'Enter') {
+      setDevice(value)
+    }
+  }
+
   return (
     <div className="relative mt-4 flex h-[40px] items-center rounded-full border border-clay bg-steel py-px md:mt-6 md:max-w-[148px]">
       <span
@@ -26,6 +35,7 @@ export default function SegmentedControl({
           value="phone"
           checked={device === 'phone'}
           onChange={handleChange}
+          tabIndex={-1}
         />
         <label
           className={`block cursor-pointer select-none px-4 py-2 text-center text-caption-medium transition-colors ease-snap ${
@@ -34,6 +44,8 @@ export default function SegmentedControl({
               : 'text-[#A6A3C8] hover:text-white'
           }`}
           htmlFor="phone"
+          tabIndex={0}
+          onKeyDown={(e) => handleKeyPress(e, 'phone')}
         >
           Phone
         </label>
@@ -46,6 +58,7 @@ export default function SegmentedControl({
           value="watch"
           checked={device === 'watch'}
           onChange={handleChange}
+          tabIndex={-1}
         />
         <label
           className={`block cursor-pointer select-none px-4 py-2 text-center text-caption-medium transition-colors ease-snap ${
@@ -54,6 +67,8 @@ export default function SegmentedControl({
               : 'text-[#A6A3C8] hover:text-white'
           }`}
           htmlFor="watch"
+          tabIndex={0}
+          onKeyDown={(e) => handleKeyPress(e, 'watch')}
         >
           Watch
         </label>

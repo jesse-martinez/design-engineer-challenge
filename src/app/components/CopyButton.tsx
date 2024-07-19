@@ -1,8 +1,17 @@
 import React from 'react'
 
-export default function CopyButton() {
+type CopyButtonProps = {
+  setInFocus?: (inFocus: boolean) => void
+}
+
+export default function CopyButton({ setInFocus = () => {} }: CopyButtonProps) {
   return (
-    <button className="hidden h-10 w-10 items-center justify-center rounded border border-smokey bg-transparent transition-colors duration-200 ease-in-out hover:border-smokey hover:bg-smokey focus-visible:border focus-visible:border-white focus-visible:bg-smokey active:border-clay active:bg-clay md:flex">
+    <button
+      className="hidden h-10 w-10 items-center justify-center rounded border border-smokey bg-transparent transition-colors duration-200 ease-in-out hover:border-smokey hover:bg-smokey focus-visible:border focus-visible:border-white focus-visible:bg-smokey active:border-clay active:bg-clay md:flex"
+      tabIndex={0}
+      onFocus={() => setInFocus(true)}
+      onBlur={() => setInFocus(false)}
+    >
       <svg
         width="16"
         height="16"

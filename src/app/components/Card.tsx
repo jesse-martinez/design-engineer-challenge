@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Button from './Button'
 import CopyButton from './CopyButton'
 import { debounce } from '../debounce'
+import clsx from 'clsx'
 
 type CardProps = {
   imagePath: string
@@ -14,9 +15,10 @@ type CardProps = {
 export default function Card({ imagePath, device, childNumber }: CardProps) {
   const [isMobileViewport, setIsMobileViewport] = useState(false)
   const [isActive, setIsActive] = useState(false)
+  const [inFocus, setInFocus] = useState(false)
 
   const toggleActive = () => {
-    setIsActive(!isActive)
+    if (window.innerWidth <= 768) setIsActive(!isActive)
   }
 
   useEffect(() => {
@@ -26,13 +28,10 @@ export default function Card({ imagePath, device, childNumber }: CardProps) {
 
     handleResize()
     window.addEventListener('resize', handleResize)
-
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const isPhone: boolean = device === 'phone'
+  const isPhone = device === 'phone'
 
   const fadeUpAnimation = {
     initial: { opacity: 0 },
@@ -46,20 +45,30 @@ export default function Card({ imagePath, device, childNumber }: CardProps) {
         delay: childNumber * 0.1 + 0.1,
         ease: [0.075, 0.82, 0.165, 1],
       }}
-      className={`group relative block overflow-hidden rounded-md border-clay bg-steel transition-all duration-[500ms] ease-snap md:flex md:hover:border ${
-        isPhone
-          ? 'h-[480px] w-[240px] md:h-[520px] md:w-[260px] md:hover:w-[548px]'
-          : 'h-[240px] w-[240px] md:w-[200px] md:hover:w-[504px]'
-      } `}
+      className={clsx(
+        'group relative block overflow-hidden rounded-md border-clay bg-steel transition-all duration-[500ms] ease-snap md:flex md:hover:border',
+        {
+          'h-[480px] w-[240px] md:h-[520px] md:w-[260px] md:hover:w-[548px]':
+            isPhone,
+          'h-[240px] w-[240px] md:w-[200px] md:hover:w-[504px]': !isPhone,
+          'md:w-[548px]': !isMobileViewport && inFocus && isPhone,
+          'md:w-[504px]': !isMobileViewport && inFocus && !isPhone,
+        },
+      )}
       onClick={toggleActive}
+      onMouseLeave={() => setInFocus(false)}
     >
-      <div className="flex shrink-0 items-center justify-end transition-[padding] md:group-hover:pl-2">
+      <div className="image-wrapper flex shrink-0 items-center justify-end transition-[padding] md:group-hover:pl-2">
         <div
-          className={`pointer-events-none relative select-none overflow-hidden rounded-md transition-all duration-500 ease-snap ${
-            isPhone
-              ? 'h-[480px] w-[240px] md:h-[520px] md:w-[260px] md:group-hover:h-[504px] md:group-hover:w-[244px]'
-              : 'h-[240px] w-[240px] md:w-[200px] md:group-hover:h-[224px] md:group-hover:w-[200px]'
-          } `}
+          className={clsx(
+            'pointer-events-none relative select-none overflow-hidden rounded-md transition-all duration-500 ease-snap',
+            {
+              'h-[480px] w-[240px] md:h-[520px] md:w-[260px] md:group-hover:h-[504px] md:group-hover:w-[244px]':
+                isPhone,
+              'h-[240px] w-[240px] md:w-[200px] md:group-hover:h-[224px] md:group-hover:w-[200px]':
+                !isPhone,
+            },
+          )}
         >
           <Image
             src={`/images/${imagePath}`}
@@ -67,16 +76,18 @@ export default function Card({ imagePath, device, childNumber }: CardProps) {
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover"
-            priority={true}
+            priority
           />
         </div>
       </div>
       <div
-        className={`duration-800 absolute left-0 top-0 flex h-full w-full shrink-0 select-none flex-col justify-between bg-steel p-4 transition-opacity ease-snap md:static md:w-[296px] md:p-6 md:opacity-100 ${
-          isMobileViewport && isActive
-            ? 'opacity-100 duration-200'
-            : 'opacity-0'
-        }`}
+        className={clsx(
+          'duration-800 absolute left-0 top-0 flex h-full w-full shrink-0 select-none flex-col justify-between bg-steel p-4 transition-opacity ease-snap md:static md:w-[296px] md:p-6 md:opacity-100',
+          {
+            'opacity-100 duration-200': isMobileViewport && isActive,
+            'opacity-0': !isMobileViewport || !isActive,
+          },
+        )}
       >
         <div>
           <p className="text-caption-large text-lavender">
@@ -103,8 +114,10 @@ export default function Card({ imagePath, device, childNumber }: CardProps) {
           </div>
         </div>
         <div className="flex justify-between">
-          <CopyButton />
-          <Button>{isMobileViewport ? 'Save' : 'Download'}</Button>
+          <CopyButton setInFocus={setInFocus} />
+          <Button setInFocus={setInFocus}>
+            {isMobileViewport ? 'Save' : 'Download'}
+          </Button>
         </div>
       </div>
     </motion.div>
